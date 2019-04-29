@@ -1,18 +1,16 @@
-#include "Model.h"
-#include "View.h"
-#include "Controller.h"
-#include "Scenegraph.h"
+#include"../include/Model.h"
+#include"../include/View.h"
+#include "../include/Controller.h"
 
 #define cout(a) cout<<a<<endl
 
 Model mymodel[4];
 View v;
 Controller c ;
-Scenegraph graph;
-const char* vShader = "shader.vert";
-const char* fShader = "shader.frag";
-const char* lightvshader = "lightvshader.vert";
-const char* lightfshader = "lightfshader.frag";
+const char* vShader = "./source/shader.vert";
+const char* fShader = "./source/shader.frag";
+const char* lightvshader = "./source/lightvshader.vert";
+const char* lightfshader = "./source/lightfshader.frag";
 
 static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode){
   c.handleKeys(window,key,code,action,mode);
@@ -57,7 +55,6 @@ int main(void) {
 	glfwMakeContextCurrent(mainWindow);
 
 	glewExperimental = GL_TRUE;
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 
@@ -71,34 +68,29 @@ int main(void) {
 
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
-	ifstream plyin1,plyin2,plyin3,plyin4,plyin5;
+	ifstream plyin1,plyin2,plyin3,plyin4;
 
-	plyin1.open("cube.ply");
-	plyin2.open("ketchup.ply");
-	plyin3.open("sphere.ply");
-	plyin4.open("Beethoven.ply");
-	plyin5.open("floor.ply");
+	plyin1.open("./data/cube.ply");
+	plyin2.open("./data/Porshe.ply");
+	plyin3.open("./data/Cow.ply");
+	plyin4.open("./data/Beethoven.ply");
 
 
-	if(!plyin1||!plyin2||!plyin3||!plyin4||!plyin5){
+	if(!plyin1||!plyin2||!plyin3||!plyin4){
 		cout("error in opening plyfiles");
 		return 0;
 	}
 	mymodel[0] = Model(plyin1,0);
 	mymodel[1] = Model(plyin2,1);
 	mymodel[2] = Model(plyin3,2);
-	mymodel[3] = Model(plyin4,3);	
-	// mymodel[4] = Model(plyin5,-1);
+	mymodel[3] = Model(plyin4,3);
 
 	v = View();
 	v.createShader(vShader,fShader);
 	v.createlightShader(lightvshader,lightfshader);
 	c = Controller(mymodel);
-	graph = Scenegraph(0,mymodel);
-	graph.addNode(0,1);
-	graph.addNode(1,2);
-	graph.addNode(2,3);
 
+	// mymodel[0].printInfo();
 
 	while(!glfwWindowShouldClose(mainWindow))
 	{
@@ -109,14 +101,12 @@ int main(void) {
 		glfwSetCursorPosCallback(mainWindow, handleCursor);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-		
-		graph.sceneUpdate();
+		// glClear(GL_COLOR_BUFFER_BIT);
 
 		v.draw(mymodel[0]);
 		v.draw(mymodel[1]);
-		// v.draw(mymodel[2]);
-		// v.draw(mymodel[3]);
+		v.draw(mymodel[2]);
+		v.draw(mymodel[3]);
 
 		glfwSwapBuffers(mainWindow);
 	}

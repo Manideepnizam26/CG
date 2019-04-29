@@ -55,6 +55,9 @@ int main(void) {
 	glfwMakeContextCurrent(mainWindow);
 
 	glewExperimental = GL_TRUE;
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+
 
 	if(glewInit() != GLEW_OK)
 	{
@@ -98,7 +101,7 @@ int main(void) {
 		glfwSetMouseButtonCallback(mainWindow ,handleMouse);
 		glfwSetCursorPosCallback(mainWindow, handleCursor);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 		v.draw(mymodel[0]);
 		v.draw(mymodel[1]);

@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "../include/Controller.h"
 // #include "Model.h"
 using namespace std;
 
@@ -36,7 +36,7 @@ void Controller::UpdateModel(){
 		model[modelId].set_y(y);
 		model[modelId].set_z(z);
 		model[modelId].set_scale(scale);
-		model[modelId].setrotationMatrix(rotMatrix);
+		model[modelId].setMatrix(rotMatrix);
 }
 
 float Controller::getX(){ return x; }
@@ -53,22 +53,6 @@ void Controller::UpdatePosition(){
 		glGetIntegerv(GL_VIEWPORT,viewport);		
 		gluUnProject(tempX,tempY,0.0,modelview,projection,viewport,&finalX,&finalY,&finalZ);
 }
-
-
-void Controller::changeMapping(){
-			model[0].changeMapping();
-			model[1].changeMapping();
-			model[2].changeMapping();
-			model[3].changeMapping();
-}
-
-void Controller::changeTexture(){
-			model[0].changeTexture();
-			model[1].changeTexture();
-			model[2].changeTexture();
-			model[3].changeTexture();
-}
-
 
 
 void Controller::handleKeys(GLFWwindow* window, int key, int code, int action, int mods){
@@ -114,15 +98,15 @@ void Controller::handleKeys(GLFWwindow* window, int key, int code, int action, i
 				UpdateModel();
     }
 
-		if(key ==GLFW_KEY_M && action == GLFW_PRESS){
-			changeMapping();
-		}
-
-		if(key ==GLFW_KEY_T && action == GLFW_PRESS){
-			changeTexture();
-		}
 		if(key ==GLFW_KEY_L && action == GLFW_PRESS){
 			model[modelId].toggleLight();
+		}
+
+		if(key ==GLFW_KEY_C && action == GLFW_PRESS){
+			model[0].changeRendering();
+			model[1].changeRendering();
+			model[2].changeRendering();
+			model[3].changeRendering();
 		}
 }
 

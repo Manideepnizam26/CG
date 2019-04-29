@@ -14,6 +14,7 @@ Model::Model(ifstream& plyfile,int index){
 
 
     rotationMatrix=glm::mat4(1);
+    modelMatrix = glm::mat4(1);
     string notUsedInfo;
     float tempFloat;
 
@@ -198,7 +199,15 @@ void Model::computeNormals(){
     }
 }
 
-void Model::setMatrix(glm::mat4 mat){
+void Model::setmodelMatrix(glm::mat4 mat){
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            modelMatrix[i][j]=mat[i][j];
+        }
+    }
+}
+
+void Model::setrotationMatrix(glm::mat4 mat){
     for(int i=0;i<4;i++){
         for(int j=0;j<4;j++){
             rotationMatrix[i][j]=mat[i][j];

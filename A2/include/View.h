@@ -3,7 +3,6 @@
 
 #include <bits/stdc++.h>
 #include "Model.h"
-#include "Scenegraph.h"
 #include<iostream>
 #include <fstream>
 #include <cstdlib>
@@ -23,23 +22,13 @@ using namespace std;
 class View{
 
 private:
-    glm::vec3 cameraPos;
-    glm::vec3 cameraTarget;
-    glm::vec3 up;
-    glm::mat4 view;
     GLuint ShaderID,lightShaderID;
-    unsigned int FVAO,FVBO[2];
-    float floorVertices[12] = { 1 , -0.1 , -1 , 1  ,-0.1 -1, 0.1 , 0.1 , -1, -0.5, 0.5 ,-1};
-    unsigned int floorTriangles[6]= { 0 , 1 , 2 , 0 , 3 , 2 };
-
 
 public:
     View();
     GLuint getshader();
     GLuint getLightShader();
     void draw(Model &mymodel);
-    void updateScene(Scenegraph &graph);
-    void drawfloor();
     void addShader(const char* shaderIDCode, GLenum shaderIDType, GLuint& shaderid);
     void compileShader(const char* vertexCode, const char* fragmentCode, GLuint& shaderid);
     string readFile(const char* fileLocation);
