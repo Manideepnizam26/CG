@@ -11,8 +11,10 @@ Controller::Controller(){
 		isHold = false;
 }
 
-Controller::Controller(Model* mymodel){
+Controller::Controller(Model* mymodel,View* myview, Scenegraph* mygraph){
 		model = mymodel;
+		graph = mygraph;
+		view = myview;
 		isHold = false;
 		setModelId(0);
 }
@@ -69,7 +71,13 @@ void Controller::changeTexture(){
 			model[3].changeTexture();
 }
 
+float Controller::getSpeed(){
+	graph->getSpeed();
+}
 
+void Controller::setSpeed(float s){
+	graph->setSpeed(s);
+}
 
 void Controller::handleKeys(GLFWwindow* window, int key, int code, int action, int mods){
 
@@ -124,10 +132,26 @@ void Controller::handleKeys(GLFWwindow* window, int key, int code, int action, i
 		if(key ==GLFW_KEY_L && action == GLFW_PRESS){
 			model[modelId].toggleLight();
 		}
+		if(key ==GLFW_KEY_R && action == GLFW_PRESS){
+			model[modelId].changeRotate();
+		}
+
+
+		if(key ==GLFW_KEY_A && action == GLFW_PRESS){
+			float speed = getSpeed();
+			speed += 0.005;
+			setSpeed(speed);
+		}
+		if(key ==GLFW_KEY_D && action == GLFW_PRESS){
+			float speed = getSpeed();
+			speed -= 0.005;
+			if(speed<0){speed = 0;}
+			setSpeed(speed);			
+		}
+
 }
 
 void Controller::handleMouse(GLFWwindow* window, int button, int action, int mods){
-
 
     if((button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)){
         glfwGetCursorPos(window, &tempX, &tempY);
@@ -152,24 +176,54 @@ void Controller::handleMouse(GLFWwindow* window, int button, int action, int mod
 	  }
 }
 
-void Controller::handleCursor(GLFWwindow* window ){
+void Controller::handleCursor(GLFWwindow* window , double xpos , double ypos ){
+			if (firstMouse)
+			{
+					lastX = xpos;
+					lastY = ypos;
+					firstMouse = false;
+			}
 
-		if(isHold){
+			float xoffset = xpos - lastX;
+			float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+			lastX = xpos;
+			lastY = ypos;
 
-				glm::mat4 temp1,temp2;
-        glfwGetCursorPos(window, &tempX, &tempY);
-				UpdatePosition();
-				currX = finalX;
-				currY = finalY;
-				trackball(q,prevX,prevY,currX,currY);
-				temp1 = rotMatrix;
-				temp2 = build_rotmatrix(q);
-				rotMatrix = temp1*temp2;
-				UpdateModel();
+			float sensitivity = 0.1f; // change this value to your liking
+			xoffset *= sensitivity;
+			yoffset *= sensitivity;
 
-        glfwGetCursorPos(window, &tempX, &tempY);
-				UpdatePosition();
-				prevX = currX;
-				prevY = currY;
-		}
+			yaw += xoffset;
+			pitch += yoffset;
+
+			// make sure that when pitch is out of bounds, screen doesn't get flipped
+			if (pitch > 89.0f)
+					pitch = 89.0f;
+			if (pitch < -89.0f)
+					pitch = -89.0f;
+
+			glm::vec3 front;
+			front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+			front.y = sin(glm::radians(pitch));
+			front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+			view->setCameraFront(glm::normalize(front));
+
+		// if(isHold){
+
+		// 		glm::mat4 temp1,temp2;
+    //     glfwGetCursorPos(window, &tempX, &tempY);
+		// 		UpdatePosition();
+		// 		currX = finalX;
+		// 		currY = finalY;
+		// 		trackball(q,prevX,prevY,currX,currY);
+		// 		temp1 = rotMatrix;
+		// 		temp2 = build_rotmatrix(q);
+		// 		rotMatrix = temp1*temp2;
+		// 		UpdateModel();
+
+    //     glfwGetCursorPos(window, &tempX, &tempY);
+		// 		UpdatePosition();
+		// 		prevX = currX;
+		// 		prevY = currY;
+		// }
 }

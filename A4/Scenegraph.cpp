@@ -43,31 +43,73 @@ void Scenegraph::addNode(int parentID, int newID){
     parent->children.push_back(newNode);
 }
 
-// void Scenegraph::rotate(int parentID, int childID){
-//     float x = models[childID].get_x() - models[parentID].get_x();
-//     float z = models[childID].get_z() - models[parentID].get_z();
+void Scenegraph::rotate(int parentID, int modelID){
 
-//     float theta;
+    float x1 = models[parentID].get_x();
+    float z1 = models[parentID].get_z();
+    float x2 = models[modelID].get_x();
+    float z2 = models[modelID].get_z();
 
-//     theta = atan(z/x);
+    float radius = sqrt( (z2-z1)*(z2-z1) + (x2-x1)*(x2-x1) );
 
-//     x = models[parentID].get_x() + (1.0*sin(theta+speed ));
-    
-// }
+    float x = models[parentID].get_x() + sin(angle); 
+    float y = models[parentID].get_y();
+    float z = models[parentID].get_z() + cos(angle); 
 
+    x+=  (0.1)*sin(10*angle);
+    models[modelID].set_x(x);
+    models[modelID].set_y(y);
+    models[modelID].set_z(z);
+    angle +=speed;
+}
+
+void Scenegraph::moveTowards(int parentID, int modelID){
+
+    float x1 = models[parentID].get_x();
+    float y1 = models[parentID].get_y();
+    float z1 = models[parentID].get_z();
+
+    float x2 = models[modelID].get_x();
+    float y2 = models[modelID].get_y();
+    float z2 = models[modelID].get_z();
+
+    float d1 = sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1) );
+    float temp = speed/2*d1;
+
+    float x = x2 + temp*(x1-x2);
+    float y = y2 + temp*(y1-y2);
+    float z = z2 + temp*(z1-z2);
+
+    models[modelID].set_x(x);
+    models[modelID].set_y(y);
+    models[modelID].set_z(z);
+}
+
+void Scenegraph::jump(int parentID, int modelID){
+
+    models[modelID].set_x( models[parentID].get_x() );
+    models[modelID].set_z( models[parentID].get_z() );
+
+    float y = models[parentID].get_y()+ 0.35;
+
+    jump_factor+=speed;
+    y+=(0.2)*(1+sin(10*jump_factor));
+
+    models[modelID].set_y(y);    
+}
 
 void Scenegraph::updateModel(int parentID,int modelID , int level){
 
-    if(level==1){
-        float x = models[parentID].get_x() + (1.0)*cos(angle); 
-        float y = models[parentID].get_y() ;
-        float z = models[parentID].get_z() + (1.0)*sin(angle); 
+    if(level==1){        
+        rotate(parentID,modelID);
+    }
 
+    else if(level==2){
+        moveTowards(parentID,modelID);
+    }
 
-        models[modelID].set_x(x);
-        models[modelID].set_y(y);
-        models[modelID].set_z(z);
-        angle +=0.01;
+    else if(level==3){
+        jump(parentID,modelID);
     }
 }
 
@@ -83,6 +125,7 @@ void Scenegraph::sceneUpdate(){
         while(size!=0){
             Node* first = nodes.front();
             nodes.pop();
+            models[first->ID].updateangle();
             // cout<<first->ID<<endl;
             size--;
             for(int i=0;i<first->children.size(); i++){

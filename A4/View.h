@@ -23,9 +23,9 @@ using namespace std;
 class View{
 
 private:
-    glm::vec3 cameraPos;
-    glm::vec3 cameraTarget;
-    glm::vec3 up;
+    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);;
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraup = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 view;
     GLuint ShaderID,lightShaderID;
     unsigned int FVAO,FVBO[2];
@@ -45,6 +45,7 @@ public:
     string readFile(const char* fileLocation);
     void createShader(const char* vertexLocation, const char* fragmentLocation);
     void createlightShader(const char* vertexLocation, const char* fragmentLocation);
+    void setCameraFront(glm::vec3 front);
 };
 
 #endif

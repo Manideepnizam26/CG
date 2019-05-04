@@ -1,33 +1,15 @@
 #include "View.h"
 
 
-View::View(){
-
-    cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    up = glm::vec3(0.0f, 1.0f, 0.0f); 
-    view = glm::lookAt(cameraPos, cameraTarget, up);
-
-    // glGenVertexArrays(1, &FVAO);
-    // glBindVertexArray(FVAO);
-    // glGenBuffers(2, FVBO);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, FVBO[0]);
-    // glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), floorVertices ,GL_STATIC_DRAW);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, FVBO[1]);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(unsigned int), floorTriangles, GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
+View::View(){ 
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraup);
 }
 
+void View::setCameraFront(glm::vec3 front){
+    cameraFront = front;
+}
 
 void View::createShader(const char* vertexLocation, const char* fragmentLocation){
-
     string vertexString = readFile(vertexLocation);
     string fragmentString = readFile(fragmentLocation);
     const char* vertexCode = vertexString.c_str();
@@ -35,8 +17,8 @@ void View::createShader(const char* vertexLocation, const char* fragmentLocation
     compileShader(vertexCode, fragmentCode,ShaderID);
 }
 
-void View::createlightShader(const char* vertexLocation, const char* fragmentLocation){
 
+void View::createlightShader(const char* vertexLocation, const char* fragmentLocation){
     string vertexString = readFile(vertexLocation);
 	string fragmentString = readFile(fragmentLocation);
 	const char* vertexCode = vertexString.c_str();
@@ -166,6 +148,9 @@ void View::draw(Model &mymodel){
     GLuint uniformModel = glGetUniformLocation(getshader(), "model");
     GLuint uniformModelColor = glGetUniformLocation(getshader(), "lightColor");
     GLuint uniformlightPosition = glGetUniformLocation(getshader(), "lightPosition");
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraup);
+
     GLuint uniformview       = glGetUniformLocation(getshader(), "view");
     GLuint uniformprojection       = glGetUniformLocation(getshader(), "projection");
 
@@ -175,6 +160,7 @@ void View::draw(Model &mymodel){
 	glm::mat4 rot = mymodel.getMatrix();
 	model = model*rot;
 	model = glm::scale(model, glm::vec3(mymodel.get_scale() , mymodel.get_scale(),mymodel.get_scale()));
+    model = glm::rotate(model, mymodel.getAngle() , glm::vec3(0,1,0));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
     glUniform4f(uniformModelColor, lightColor.x,lightColor.y,lightColor.z,1.0);
     glUniform3f(uniformlightPosition,mymodel.getLightPos().x,mymodel.getLightPos().y,mymodel.getLightPos().z);

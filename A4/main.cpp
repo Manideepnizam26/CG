@@ -6,9 +6,9 @@
 #define cout(a) cout<<a<<endl
 
 Model mymodel[4];
-View v;
+View view;
 Controller c ;
-Scenegraph graph;
+Scenegraph mygraph;
 const char* vShader = "shader.vert";
 const char* fShader = "shader.frag";
 const char* lightvshader = "lightvshader.vert";
@@ -23,7 +23,7 @@ static void handleMouse(GLFWwindow* window, int button , int action, int mode){
 }
 
 static void handleCursor(GLFWwindow* window,double xpos, double ypos){
-  c.handleCursor( window);
+  c.handleCursor( window,xpos,ypos);
 }
 
 
@@ -73,14 +73,14 @@ int main(void) {
 
 	ifstream plyin1,plyin2,plyin3,plyin4,plyin5;
 
-	plyin1.open("cube.ply");
-	plyin2.open("ketchup.ply");
-	plyin3.open("sphere.ply");
-	plyin4.open("Beethoven.ply");
-	plyin5.open("floor.ply");
+	plyin3.open("./data/cube.ply");
+	plyin4.open("./data/Gallon.ply");
+	plyin2.open("./data/sphere.ply");
+	plyin1.open("./data/Beethoven.ply");
+//	plyin5.open("./data/floor.ply");
 
 
-	if(!plyin1||!plyin2||!plyin3||!plyin4||!plyin5){
+	if(!plyin1||!plyin2||!plyin3||!plyin4){
 		cout("error in opening plyfiles");
 		return 0;
 	}
@@ -90,14 +90,14 @@ int main(void) {
 	mymodel[3] = Model(plyin4,3);	
 	// mymodel[4] = Model(plyin5,-1);
 
-	v = View();
-	v.createShader(vShader,fShader);
-	v.createlightShader(lightvshader,lightfshader);
-	c = Controller(mymodel);
-	graph = Scenegraph(0,mymodel);
-	graph.addNode(0,1);
-	graph.addNode(1,2);
-	graph.addNode(2,3);
+	view = View();
+	view.createShader(vShader,fShader);
+	view.createlightShader(lightvshader,lightfshader);
+	mygraph = Scenegraph(0,mymodel);
+	c = Controller(mymodel,&view,&mygraph);
+	mygraph.addNode(0,1);
+	mygraph.addNode(1,2);
+	mygraph.addNode(2,3);
 
 
 	while(!glfwWindowShouldClose(mainWindow))
@@ -111,12 +111,12 @@ int main(void) {
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 		
-		graph.sceneUpdate();
+		mygraph.sceneUpdate();
 
-		v.draw(mymodel[0]);
-		v.draw(mymodel[1]);
-		// v.draw(mymodel[2]);
-		// v.draw(mymodel[3]);
+		view.draw(mymodel[0]);
+		view.draw(mymodel[1]);
+		view.draw(mymodel[2]);
+		view.draw(mymodel[3]);
 
 		glfwSwapBuffers(mainWindow);
 	}

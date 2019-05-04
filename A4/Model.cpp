@@ -7,7 +7,8 @@ Model::Model(ifstream& plyfile,int index){
 
     scale = 0.2;
     x=-0.75+0.5*index;
-    y=0.0;
+    y=-0.3;
+    if(index==3){ y = 0.3;}
     z=0.0;
 
     if(index==-1){scale=1;x=0; y=-0.35;}
@@ -49,15 +50,13 @@ Model::Model(ifstream& plyfile,int index){
         Triangles[3*i+1]=q;
         Triangles[3*i+2]=r;
     }
-//     initModel();
-// }
 
     lightPosition.x = -0.75f+0.5f*index;
     lightPosition.y = 0.75f;
     lightPosition.z = 0.0f;
+    angle = 0;
+    toRotate = false;
 
-
-// void Model::initModel(){
 
     normalize();
     computeNormals();
@@ -99,10 +98,10 @@ Model::Model(ifstream& plyfile,int index){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-    createTexture("wall.jpg",Texture[0]);
-    createTexture("chessboard.jpeg",Texture[1]);
-    createTexture("world.jpeg",Texture[2]);
-    createTexture("selfie.jpeg",Texture[3]);
+    createTexture("./data/wall.jpg",Texture[0]);
+    createTexture("./data/chessboard.jpeg",Texture[1]);
+    createTexture("./data/world.jpeg",Texture[2]);
+    createTexture("./data/selfie.jpeg",Texture[3]);
     glBindVertexArray(VAO);
     glBindTexture(GL_TEXTURE_2D,Texture[0]);
 	glBindVertexArray(0);
@@ -221,10 +220,12 @@ float Model::get_x(){ return x;}
 float Model::get_y(){ return y;}
 float Model::get_z(){ return z;}
 float Model::get_scale(){ return scale;}
+float Model::getAngle(){ return angle;}
 void Model::set_x(float a){ x = a; }
 void Model::set_y(float b){ y = b; }
 void Model::set_z(float c){ z = c; }
 void Model::set_scale(float s){ scale = s; }
+void Model::setAngle(float a){ angle = a;}
 
 unsigned int Model::get_vao(){ return VAO; }
 unsigned int Model::get_lvao(){ return LVAO;}
@@ -345,6 +346,14 @@ void Model::changeTexture(){
     glBindVertexArray(0);
 }
 
+void Model::changeRotate(){
+    if(toRotate){ toRotate = false; }
+    else{ toRotate = true; }
+}
+
+void Model::updateangle(){
+    if(toRotate){ angle+=0.05;}
+}
 
 void Model::createLightmodel(int index){
 

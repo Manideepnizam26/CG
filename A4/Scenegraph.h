@@ -31,6 +31,8 @@ private:
     Node* Root;
     Model* models;
     float angle=0;
+    float jump_factor = 0.01;
+    float speed = 0.01;
 
 public:
     Scenegraph();
@@ -40,7 +42,11 @@ public:
     void addNode(int parentID, int newID);
     void sceneUpdate();
     void updateModel(int parentID, int modelID , int level);
-    void rotate(int parentID, int childID);
+    void rotate(int parentID, int modelID);
+    void moveTowards(int parentID, int modelID);
+    void jump(int parentID, int modelID);
+    float getSpeed(){ return speed; }
+    void setSpeed(float s){ speed = s; }
 };
 
 #endif
